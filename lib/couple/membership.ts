@@ -5,6 +5,7 @@ export type CoupleMembership = {
   inviteCode: string;
   memberCount: number;
   partnerName: string | null;
+  hearts: number;
 };
 
 export async function getCoupleMembership(
@@ -22,17 +23,23 @@ export async function getCoupleMembership(
     return null;
   }
 
-  const [{ data: couple }, { data: members }] = await Promise.all([
-    supabase
-      .from("couples")
-      .select("invite_code")
-      .eq("id", membership.couple_id)
-      .maybeSingle(),
-    supabase
-      .from("couple_members")
-      .select("user_id")
-      .eq("couple_id", membership.couple_id),
-  ]);
+  const [{ data: couple }, { data: members }, { data: apartment }] =
+    await Promise.all([
+      supabase
+        .from("couples")
+        .select("invite_code")
+        .eq("id", membership.couple_id)
+        .maybeSingle(),
+      supabase
+        .from("couple_members")
+        .select("user_id")
+        .eq("couple_id", membership.couple_id),
+      supabase
+        .from("apartments")
+        .select("hearts")
+        .eq("couple_id", membership.couple_id)
+        .maybeSingle(),
+    ]);
 
   if (!couple) {
     return null;
@@ -55,5 +62,6 @@ export async function getCoupleMembership(
     inviteCode: couple.invite_code,
     memberCount: members?.length ?? 0,
     partnerName,
+    hearts: apartment?.hearts ?? 0,
   };
 }

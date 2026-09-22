@@ -2,8 +2,10 @@ import path from "node:path";
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // Keep Next inside this folder. A leftover lockfile in Documents
+  // otherwise makes startup crawl.
+  outputFileTracingRoot: path.join(__dirname),
   turbopack: {
-    // Pin the app directory so a lockfile in a parent folder is not used as the root.
     root: path.join(__dirname),
   },
 };

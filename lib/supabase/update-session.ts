@@ -50,7 +50,9 @@ export async function updateSession(request: NextRequest) {
     url.pathname = path;
     url.search = "";
     const redirectResponse = NextResponse.redirect(url);
-    redirectResponse.cookies.setAll(supabaseResponse.cookies.getAll());
+    supabaseResponse.cookies.getAll().forEach((cookie) => {
+      redirectResponse.cookies.set(cookie);
+    });
     return redirectResponse;
   };
 

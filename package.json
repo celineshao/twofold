@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --webpack",
+    "dev": "echo 'Starting Next. The first Ready line can take a minute with no other output.' && NEXT_TELEMETRY_DISABLED=1 NODE_OPTIONS='--max-old-space-size=4096' next dev --webpack --hostname 127.0.0.1",
     "dev:turbo": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
