@@ -1,0 +1,49 @@
+@import "tailwindcss";
+
+:root {
+  --cream: #fff6ee;
+  --blush: #f8d4d8;
+  --rose: #e8919a;
+  --rose-deep: #c96b78;
+  --sage: #c9dcc0;
+  --sage-deep: #7ea07a;
+  --lilac: #dcc9e8;
+  --peach: #f4c9a8;
+  --ink: #4a3b3e;
+  --muted: #7d6b6e;
+  --card: #fffbf7;
+}
+
+@theme inline {
+  --color-cream: var(--cream);
+  --color-blush: var(--blush);
+  --color-rose: var(--rose);
+  --color-rose-deep: var(--rose-deep);
+  --color-sage: var(--sage);
+  --color-sage-deep: var(--sage-deep);
+  --color-lilac: var(--lilac);
+  --color-peach: var(--peach);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-card: var(--card);
+  --color-background: var(--cream);
+  --color-foreground: var(--ink);
+  --font-sans: ui-rounded, "Trebuchet MS", "Segoe UI", sans-serif;
+  --font-display: ui-rounded, "Trebuchet MS", "Segoe UI", sans-serif;
+}
+
+body {
+  background:
+    radial-gradient(ellipse at top, #ffe8ef 0%, transparent 55%),
+    radial-gradient(ellipse at bottom right, #e8f3e2 0%, transparent 45%),
+    var(--cream);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  min-height: 100vh;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-display);
+}
