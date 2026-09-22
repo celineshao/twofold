@@ -2,7 +2,7 @@ export type FurnitureCategory = "bed" | "seating" | "decor" | "plant" | "floor";
 
 export type GameType = "this_or_that" | "how_well";
 
-export type SessionStatus = "lobby" | "in_progress" | "completed" | "abandoned";
+export type SessionStatus = "waiting" | "playing" | "finished" | "abandoned";
 
 export type Profile = {
   id: string;

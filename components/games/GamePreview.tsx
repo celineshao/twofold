@@ -17,7 +17,7 @@ export function GamePreview({ title, description, href }: GamePreviewProps) {
         <h2 className="font-display text-xl font-semibold">{title}</h2>
         <p className="mt-2 text-sm leading-relaxed text-muted">{description}</p>
       </div>
-      <Button href={href}>Open lobby</Button>
+      <Button href={href}>Play together</Button>
     </Card>
   );
 }

@@ -7,7 +7,7 @@ export default function GamesPage() {
       <PageHeader
         kicker="Lobby"
         title="Play together"
-        description="Pick a game. Multiplayer sessions and scoring are not wired up yet."
+        description="Pick a game. Your person gets an invite, then you both start together."
       />
       <div className="grid gap-4 sm:grid-cols-2">
         <GamePreview

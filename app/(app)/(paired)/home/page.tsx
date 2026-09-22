@@ -1,14 +1,19 @@
 import Link from "next/link";
 import { ApartmentPreview } from "@/components/home/ApartmentPreview";
+import { GameInvite } from "@/components/home/GameInvite";
 import { TonightCard } from "@/components/home/TonightCard";
 import { requireUser } from "@/lib/auth/session";
 import { getCoupleMembership } from "@/lib/couple/membership";
+import { getOpenGameInvite } from "@/lib/games/queries";
 
 export default async function HomePage() {
   const user = await requireUser();
   const membership = await getCoupleMembership(user.id);
   const partnerName = membership?.partnerName ?? "your person";
   const hearts = membership?.hearts ?? 0;
+  const invite = membership
+    ? await getOpenGameInvite(membership.coupleId, user.id)
+    : null;
 
   return (
     <div className="space-y-10">
@@ -68,6 +73,14 @@ export default async function HomePage() {
           </Link>
         </div>
       </section>
+
+      {membership ? (
+        <GameInvite
+          coupleId={membership.coupleId}
+          userId={user.id}
+          initialInvite={invite}
+        />
+      ) : null}
 
       <section className="home-fade">
         <div className="mb-3 flex items-end justify-between">

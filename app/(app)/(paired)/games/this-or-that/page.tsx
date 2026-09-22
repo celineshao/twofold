@@ -1,30 +1,23 @@
-import { Button } from "@/components/ui/Button";
-import { Card } from "@/components/ui/Card";
-import { PageHeader } from "@/components/ui/PageHeader";
+import { GameTablePage } from "@/components/games/GameTablePage";
+import { ThisOrThatPlay } from "@/components/games/ThisOrThatPlay";
+import { requireUser } from "@/lib/auth/session";
 
-export default function ThisOrThatPage() {
+export default async function ThisOrThatPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ session?: string }>;
+}) {
+  const user = await requireUser();
+  const { session } = await searchParams;
+
   return (
-    <div className="mx-auto max-w-xl space-y-6">
-      <PageHeader
-        kicker="This or That"
-        title="Waiting to start"
-        description="Both of you will see the same prompt. Answering and reveal are placeholders."
-      />
-      <Card className="space-y-4 text-center">
-        <p className="text-sm font-semibold text-rose-deep">Round 1 of 5</p>
-        <h2 className="font-display text-2xl font-semibold">
-          Coffee or tea in the morning?
-        </h2>
-        <div className="grid gap-3 sm:grid-cols-2">
-          <Button variant="ghost" disabled>
-            Coffee
-          </Button>
-          <Button variant="ghost" disabled>
-            Tea
-          </Button>
-        </div>
-        <p className="text-sm text-muted">Partner has not joined yet.</p>
-      </Card>
-    </div>
+    <GameTablePage
+      gameType="this_or_that"
+      title="This or That"
+      description="Same prompt, two options. We will wait for your person, then start together."
+      userId={user.id}
+      initialSessionId={session ?? null}
+      play={<ThisOrThatPlay />}
+    />
   );
 }

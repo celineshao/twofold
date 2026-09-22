@@ -1,30 +1,23 @@
-import { Button } from "@/components/ui/Button";
-import { Card } from "@/components/ui/Card";
-import { PageHeader } from "@/components/ui/PageHeader";
+import { GameTablePage } from "@/components/games/GameTablePage";
+import { KnowMePlay } from "@/components/games/KnowMePlay";
+import { requireUser } from "@/lib/auth/session";
 
-export default function KnowMePage() {
+export default async function KnowMePage({
+  searchParams,
+}: {
+  searchParams: Promise<{ session?: string }>;
+}) {
+  const user = await requireUser();
+  const { session } = await searchParams;
+
   return (
-    <div className="mx-auto max-w-xl space-y-6">
-      <PageHeader
-        kicker="How Well Do You Know Me?"
-        title="Waiting to start"
-        description="Roles will flip each round. This screen is a static preview of the prompt layout."
-      />
-      <Card className="space-y-4 text-center">
-        <p className="text-sm font-semibold text-rose-deep">Guess their answer</p>
-        <h2 className="font-display text-2xl font-semibold">
-          Ideal weekend: stay in or go out?
-        </h2>
-        <div className="grid gap-3 sm:grid-cols-2">
-          <Button variant="ghost" disabled>
-            Stay in
-          </Button>
-          <Button variant="ghost" disabled>
-            Go out
-          </Button>
-        </div>
-        <p className="text-sm text-muted">Scoring and realtime sync come later.</p>
-      </Card>
-    </div>
+    <GameTablePage
+      gameType="how_well"
+      title="How Well Do You Know Me?"
+      description="One answers, one guesses. We will wait for your person, then start together."
+      userId={user.id}
+      initialSessionId={session ?? null}
+      play={<KnowMePlay />}
+    />
   );
 }
