@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ApartmentCanvas } from "@/components/apartment/ApartmentCanvas";
 import { ApartmentRoom } from "@/components/apartment/ApartmentRoom";
 import { requireUser } from "@/lib/auth/session";
 import { getApartmentRoom } from "@/lib/apartment/room";
@@ -27,8 +28,8 @@ export default async function ApartmentPage() {
             Your apartment
           </h1>
           <p className="mt-2 max-w-lg text-sm leading-relaxed text-muted">
-            A little dollhouse for two. You can look around for now; moving
-            furniture comes next.
+            Look around, or tap Edit to slide pieces on the grid. Your person
+            sees it live.
           </p>
         </div>
         <div className="flex items-center gap-3">
@@ -37,25 +38,17 @@ export default async function ApartmentPage() {
           </div>
           <Link
             href="/shop"
-            className="rounded-full bg-sage-deep px-4 py-2 text-sm font-semibold text-white"
+            className="rounded-full bg-card px-4 py-2 text-sm font-semibold text-ink ring-1 ring-[#ead9c8]"
           >
             Furniture shop
           </Link>
         </div>
       </header>
 
-      <ApartmentRoom items={items} />
-
-      {items.length === 0 ? (
-        <p className="text-center text-sm text-muted">
-          The room is still empty. When you buy and place pieces, they will
-          appear here for both of you.
-        </p>
+      {room ? (
+        <ApartmentCanvas apartmentId={room.apartmentId} initialItems={items} />
       ) : (
-        <p className="text-center text-sm text-muted">
-          {items.length} {items.length === 1 ? "piece" : "pieces"} in the nest.
-          Lower objects sit in front.
-        </p>
+        <ApartmentRoom items={items} />
       )}
     </div>
   );

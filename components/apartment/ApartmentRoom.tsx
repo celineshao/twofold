@@ -1,22 +1,32 @@
+import type { PointerEvent, Ref } from "react";
 import { FurnitureItem } from "@/components/apartment/FurnitureItem";
 import { ROOM_COLS, ROOM_ROWS, type PlacedFurniture } from "@/lib/apartment/grid";
+import { cn } from "@/lib/cn";
 
 type ApartmentRoomProps = {
   items: PlacedFurniture[];
   cols?: number;
   rows?: number;
+  editing?: boolean;
+  selectedId?: string | null;
+  floorRef?: Ref<HTMLDivElement>;
+  onSelect?: (id: string) => void;
+  onItemPointerDown?: (
+    event: PointerEvent<HTMLDivElement>,
+    id: string,
+  ) => void;
 };
 
 export function ApartmentRoom({
   items,
   cols = ROOM_COLS,
   rows = ROOM_ROWS,
+  editing = false,
+  selectedId = null,
+  floorRef,
+  onSelect,
+  onItemPointerDown,
 }: ApartmentRoomProps) {
-  const wallItems = items.filter(
-    (item) => item.y === 0 && (item.category === "decor" || item.imageKey.includes("art")),
-  );
-  const floorItems = items.filter((item) => !wallItems.includes(item));
-
   return (
     <div className="overflow-hidden rounded-[2rem] bg-[#fff6ee] shadow-[0_18px_40px_rgba(90,70,50,0.12)] ring-1 ring-[#e4d2b8]">
       <div className="relative h-40 overflow-hidden sm:h-48">
@@ -46,28 +56,13 @@ export function ApartmentRoom({
         </div>
 
         <div className="absolute inset-x-0 bottom-0 h-4 bg-[#e6c8a8]" />
-
-        <div className="absolute inset-x-[14%] bottom-5 top-5">
-          {wallItems.map((item) => (
-            <FurnitureItem
-              key={item.id}
-              name={item.name}
-              imageKey={item.imageKey}
-              category={item.category}
-              x={item.x}
-              y={0}
-              width={item.width}
-              height={1}
-              rotation={item.rotation}
-              cols={cols}
-              rows={1}
-              onWall
-            />
-          ))}
-        </div>
       </div>
 
-      <div className="relative min-h-[300px] sm:min-h-[380px]">
+      <div
+        ref={floorRef}
+        className="relative min-h-[300px] sm:min-h-[380px]"
+        onPointerDown={() => onSelect?.("")}
+      >
         <div
           className="absolute inset-0"
           style={{
@@ -76,7 +71,10 @@ export function ApartmentRoom({
           }}
         />
         <div
-          className="absolute inset-0 opacity-[0.16]"
+          className={cn(
+            "absolute inset-0",
+            editing ? "opacity-40" : "opacity-[0.16]",
+          )}
           style={{
             backgroundImage:
               "linear-gradient(to right, rgba(150,110,70,0.28) 1px, transparent 1px), linear-gradient(to bottom, rgba(150,110,70,0.2) 1px, transparent 1px)",
@@ -84,7 +82,7 @@ export function ApartmentRoom({
           }}
         />
 
-        {floorItems.map((item) => (
+        {items.map((item) => (
           <FurnitureItem
             key={item.id}
             name={item.name}
@@ -97,6 +95,16 @@ export function ApartmentRoom({
             rotation={item.rotation}
             cols={cols}
             rows={rows}
+            selected={selectedId === item.id}
+            editing={editing}
+            onPointerDown={
+              editing
+                ? (event) => {
+                    event.stopPropagation();
+                    onItemPointerDown?.(event, item.id);
+                  }
+                : undefined
+            }
           />
         ))}
       </div>
