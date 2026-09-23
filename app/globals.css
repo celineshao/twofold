@@ -105,3 +105,28 @@ body {
   animation: payout-follow 0.55s ease both;
   animation-delay: 0.8s;
 }
+
+@keyframes avatar-step {
+  0%,
+  100% {
+    transform: rotate(-10deg) translateY(0);
+  }
+  50% {
+    transform: rotate(10deg) translateY(-4%);
+  }
+}
+
+.avatar-walk .avatar-leg-left {
+  animation: avatar-step 0.45s ease-in-out infinite;
+  transform-origin: top center;
+}
+
+.avatar-walk .avatar-leg-right {
+  animation: avatar-step 0.45s ease-in-out infinite reverse;
+  transform-origin: top center;
+}
+
+.avatar-sit .avatar-leg {
+  height: 12% !important;
+  bottom: 14% !important;
+}

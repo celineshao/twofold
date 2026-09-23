@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ApartmentCanvas } from "@/components/apartment/ApartmentCanvas";
 import { ApartmentRoom } from "@/components/apartment/ApartmentRoom";
 import { requireUser } from "@/lib/auth/session";
+import { getApartmentPeople } from "@/lib/avatar/occupants";
 import { getApartmentRoom } from "@/lib/apartment/room";
 import { getCoupleMembership } from "@/lib/couple/membership";
 
@@ -14,6 +15,7 @@ export default async function ApartmentPage() {
   }
 
   const room = await getApartmentRoom(membership.coupleId);
+  const people = await getApartmentPeople(membership.coupleId, user.id);
   const hearts = room?.hearts ?? membership.hearts;
   const items = room?.items ?? [];
 
@@ -28,11 +30,17 @@ export default async function ApartmentPage() {
             Your apartment
           </h1>
           <p className="mt-2 max-w-lg text-sm leading-relaxed text-muted">
-            Look around, or tap Edit to slide pieces on the grid. Your person
-            sees it live.
+            Look around, or tap Edit to slide pieces on the grid. You two stand
+            in the room. Customize your look anytime.
           </p>
         </div>
         <div className="flex items-center gap-3">
+          <Link
+            href="/avatar"
+            className="rounded-full bg-sage-deep px-4 py-2 text-sm font-semibold text-white"
+          >
+            Edit look
+          </Link>
           <div className="rounded-full bg-[#f7efe4] px-4 py-2 text-sm font-semibold text-ink ring-1 ring-[#ead9c8]">
             ♡ {hearts} Hearts
           </div>
@@ -46,9 +54,13 @@ export default async function ApartmentPage() {
       </header>
 
       {room ? (
-        <ApartmentCanvas apartmentId={room.apartmentId} initialItems={items} />
+        <ApartmentCanvas
+          apartmentId={room.apartmentId}
+          initialItems={items}
+          people={people}
+        />
       ) : (
-        <ApartmentRoom items={items} />
+        <ApartmentRoom items={items} people={people} />
       )}
     </div>
   );

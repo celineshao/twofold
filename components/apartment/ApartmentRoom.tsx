@@ -1,6 +1,8 @@
 import type { PointerEvent, Ref } from "react";
+import { ApartmentPeople } from "@/components/apartment/ApartmentPeople";
 import { FurnitureItem } from "@/components/apartment/FurnitureItem";
 import { ROOM_COLS, ROOM_ROWS, type PlacedFurniture } from "@/lib/apartment/grid";
+import type { RoomPerson } from "@/lib/avatar/spots";
 import { cn } from "@/lib/cn";
 
 type ApartmentRoomProps = {
@@ -11,6 +13,7 @@ type ApartmentRoomProps = {
   selectedId?: string | null;
   floorRef?: Ref<HTMLDivElement>;
   onSelect?: (id: string) => void;
+  people?: RoomPerson[];
   onItemPointerDown?: (
     event: PointerEvent<HTMLDivElement>,
     id: string,
@@ -24,6 +27,7 @@ export function ApartmentRoom({
   editing = false,
   selectedId = null,
   floorRef,
+  people = [],
   onSelect,
   onItemPointerDown,
 }: ApartmentRoomProps) {
@@ -107,6 +111,8 @@ export function ApartmentRoom({
             }
           />
         ))}
+
+        <ApartmentPeople people={people} />
       </div>
     </div>
   );

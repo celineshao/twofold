@@ -11,11 +11,14 @@ import {
 } from "@/lib/apartment/map-items";
 import { clampToGrid, nextRotation } from "@/lib/apartment/placement";
 import { SAMPLE_FURNITURE } from "@/lib/apartment/sample";
+import { lookFromProfile } from "@/lib/avatar/look";
+import type { RoomPerson } from "@/lib/avatar/spots";
 import { createClient } from "@/lib/supabase/client";
 
 type ApartmentCanvasProps = {
   apartmentId: string;
   initialItems: PlacedFurniture[];
+  people: RoomPerson[];
 };
 
 type DragState = {
@@ -36,9 +39,11 @@ type ItemChange = {
 export function ApartmentCanvas({
   apartmentId,
   initialItems,
+  people: initialPeople,
 }: ApartmentCanvasProps) {
   const [editing, setEditing] = useState(false);
   const [items, setItems] = useState(initialItems);
+  const [people, setPeople] = useState(initialPeople);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const floorRef = useRef<HTMLDivElement>(null);
@@ -61,6 +66,43 @@ export function ApartmentCanvas({
     },
     [],
   );
+
+  useEffect(() => {
+    const ids = initialPeople.map((person) => person.id);
+    if (ids.length === 0) {
+      return;
+    }
+    const supabase = createClient();
+    const channel = supabase.channel(`avatars:${apartmentId}`);
+    for (const id of ids) {
+      channel.on(
+        "postgres_changes",
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "profiles",
+          filter: `id=eq.${id}`,
+        },
+        (payload) => {
+          const row = payload.new as { id?: string; avatar?: string | null };
+          if (!row.id) {
+            return;
+          }
+          setPeople((list) =>
+            list.map((item) =>
+              item.id === row.id
+                ? { ...item, look: lookFromProfile(row.avatar, row.id) }
+                : item,
+            ),
+          );
+        },
+      );
+    }
+    channel.subscribe();
+    return () => {
+      void supabase.removeChannel(channel);
+    };
+  }, [apartmentId, initialPeople]);
 
   const pointToCell = useCallback((clientX: number, clientY: number) => {
     const floor = floorRef.current;
@@ -363,6 +405,7 @@ export function ApartmentCanvas({
 
       <ApartmentRoom
         items={items}
+        people={people}
         editing={editing}
         selectedId={selectedId}
         floorRef={floorRef}
