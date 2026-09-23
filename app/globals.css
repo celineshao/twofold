@@ -70,3 +70,38 @@ body {
 .home-float {
   animation: home-float 5s ease-in-out infinite;
 }
+
+@keyframes payout-pop {
+  0% {
+    opacity: 0;
+    transform: scale(0.7) translateY(12px);
+  }
+  58% {
+    opacity: 1;
+    transform: scale(1.08) translateY(-6px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes payout-follow {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.payout-pop {
+  animation: payout-pop 0.75s ease both;
+}
+
+.payout-follow {
+  animation: payout-follow 0.55s ease both;
+  animation-delay: 0.8s;
+}

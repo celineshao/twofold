@@ -1,5 +1,6 @@
 import { GamePreview } from "@/components/games/GamePreview";
 import { PageHeader } from "@/components/ui/PageHeader";
+import { QUIZ_GAMES } from "@/lib/games/quizzes";
 
 export default function GamesPage() {
   return (
@@ -10,16 +11,14 @@ export default function GamesPage() {
         description="Pick a game. Your person gets an invite, then you both start together."
       />
       <div className="grid gap-4 sm:grid-cols-2">
-        <GamePreview
-          title="This or That"
-          description="Same prompt, two options. Match with your person and earn Hearts."
-          href="/games/this-or-that"
-        />
-        <GamePreview
-          title="How Well Do You Know Me?"
-          description="One of you answers as yourself. The other guesses. Reveal together."
-          href="/games/know-me"
-        />
+        {QUIZ_GAMES.map((quiz) => (
+          <GamePreview
+            key={quiz.gameType}
+            title={quiz.title}
+            description={quiz.cardDescription}
+            href={quiz.href}
+          />
+        ))}
       </div>
     </div>
   );

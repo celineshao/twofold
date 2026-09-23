@@ -37,6 +37,12 @@ export function StartGameScreen({
       }
 
       let session = created.session;
+      if (session.game_type !== gameType) {
+        setError(
+          "Another game is still open. Finish that one, or run the latest game SQL so How Well can start its own table.",
+        );
+        return;
+      }
       if (!session.player_ids.includes(userId) && session.status === "waiting") {
         const joined = await joinGameSession(session.id);
         if (!joined.ok) {

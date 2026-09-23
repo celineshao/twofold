@@ -21,7 +21,22 @@ export function toGameError(error: { message: string } | null) {
     return "This game already finished.";
   }
   if (message.includes("schema cache") || message.includes("could not find the function")) {
-    return "The game lobby is not in the database yet. Run the game lobby SQL in Supabase, then try again.";
+    return "This game is not in the database yet. Run the latest game SQL in Supabase, then try again.";
+  }
+  if (message.includes("wrong game")) {
+    return "That table belongs to a different game. Start How Well from the games page as a new table.";
+  }
+  if (message.includes("invalid answer")) {
+    return "That choice is not on this card.";
+  }
+  if (message.includes("round not finished")) {
+    return "Wait until you both have answered.";
+  }
+  if (message.includes("not in this game")) {
+    return "You are not at this table.";
+  }
+  if (message.includes("game is not finished")) {
+    return "Finish the last round before claiming Hearts.";
   }
 
   return error.message;

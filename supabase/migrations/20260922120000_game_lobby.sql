@@ -17,8 +17,8 @@ create table public.game_session_players (
 create index game_session_players_user_id_idx
   on public.game_session_players (user_id);
 
-create unique index game_sessions_one_open_per_couple
-  on public.game_sessions (couple_id)
+create unique index game_sessions_one_open_per_couple_game
+  on public.game_sessions (couple_id, game_type)
   where status in ('waiting', 'playing');
 
 alter table public.game_session_players enable row level security;
@@ -92,6 +92,7 @@ begin
   into v_session
   from public.game_sessions
   where couple_id = v_couple_id
+    and game_type = p_game_type
     and status in ('waiting', 'playing')
   order by created_at desc
   limit 1

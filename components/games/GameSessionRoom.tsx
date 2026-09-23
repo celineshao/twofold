@@ -1,8 +1,10 @@
 "use client";
 
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { GameLobby } from "@/components/games/GameLobby";
+import { LeaveGameButton } from "@/components/games/LeaveGameButton";
 import { useGameSession } from "@/lib/games/useGameSession";
-import { gameTitle } from "@/lib/games/session";
 import type { GameSessionPayload } from "@/lib/games/session";
 
 type GameSessionRoomProps = {
@@ -18,8 +20,15 @@ export function GameSessionRoom({
   initialSession = null,
   children,
 }: GameSessionRoomProps) {
+  const router = useRouter();
   const { session, loading, error } = useGameSession(sessionId);
   const current = session ?? initialSession;
+
+  useEffect(() => {
+    if (current?.status === "abandoned") {
+      router.replace("/games");
+    }
+  }, [current?.status, router]);
 
   if (loading && !current) {
     return (
@@ -37,20 +46,29 @@ export function GameSessionRoom({
     );
   }
 
-  if (current.status === "waiting") {
-    return <GameLobby partnerName={partnerName} />;
+  if (current.status === "abandoned") {
+    return (
+      <p className="text-center text-sm font-semibold text-muted">
+        This table closed. Heading back to games…
+      </p>
+    );
   }
 
-  if (current.status === "finished" || current.status === "abandoned") {
+  if (current.status === "waiting") {
     return (
-      <div className="mx-auto max-w-md text-center">
-        <h1 className="font-display text-2xl font-semibold text-ink">
-          {gameTitle(current.game_type)} ended
-        </h1>
-        <p className="mt-2 text-sm text-muted">This table is closed.</p>
+      <div>
+        <GameLobby partnerName={partnerName} />
+        <LeaveGameButton sessionId={sessionId} />
       </div>
     );
   }
 
-  return <>{children}</>;
+  return (
+    <div>
+      {children}
+      {current.status === "playing" ? (
+        <LeaveGameButton sessionId={sessionId} />
+      ) : null}
+    </div>
+  );
 }

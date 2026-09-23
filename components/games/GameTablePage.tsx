@@ -2,43 +2,70 @@
 
 import { useState } from "react";
 import { GameSessionRoom } from "@/components/games/GameSessionRoom";
+import { QuizPlay } from "@/components/games/QuizPlay";
 import { StartGameScreen } from "@/components/games/StartGameScreen";
-import { gameSessionPath } from "@/lib/games/session";
+import { createGameSession, joinGameSession } from "@/lib/games/client";
+import { quizFor } from "@/lib/games/quizzes";
+import { quizSessionPath } from "@/lib/games/quiz";
 import type { GameType } from "@/types/database";
 
 type GameTablePageProps = {
   gameType: GameType;
-  title: string;
-  description: string;
   userId: string;
   initialSessionId?: string | null;
-  play: React.ReactNode;
 };
 
 export function GameTablePage({
   gameType,
-  title,
-  description,
   userId,
   initialSessionId = null,
-  play,
 }: GameTablePageProps) {
+  const quiz = quizFor(gameType);
   const [sessionId, setSessionId] = useState(initialSessionId);
+
+  async function openSession(id: string) {
+    setSessionId(id);
+    window.history.replaceState(null, "", quizSessionPath(quiz, id));
+  }
+
+  async function playAgain() {
+    const created = await createGameSession(gameType);
+    if (!created.ok) {
+      return;
+    }
+    let session = created.session;
+    if (!session.player_ids.includes(userId) && session.status === "waiting") {
+      const joined = await joinGameSession(session.id);
+      if (!joined.ok) {
+        return;
+      }
+      session = joined.session;
+    }
+    await openSession(session.id);
+  }
 
   if (!sessionId) {
     return (
       <StartGameScreen
         gameType={gameType}
-        title={title}
-        description={description}
+        title={quiz.title}
+        description={quiz.lobbyDescription}
         userId={userId}
         onStarted={(id) => {
           setSessionId(id);
-          window.history.replaceState(null, "", gameSessionPath(gameType, id));
+          window.history.replaceState(null, "", quizSessionPath(quiz, id));
         }}
       />
     );
   }
 
-  return <GameSessionRoom sessionId={sessionId}>{play}</GameSessionRoom>;
+  return (
+    <GameSessionRoom sessionId={sessionId}>
+      <QuizPlay
+        quiz={quiz}
+        sessionId={sessionId}
+        onPlayAgain={() => void playAgain()}
+      />
+    </GameSessionRoom>
+  );
 }

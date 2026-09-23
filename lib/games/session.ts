@@ -1,6 +1,8 @@
+import { quizFor } from "@/lib/games/quizzes";
+import { asRecord, quizSessionPath } from "@/lib/games/quiz";
 import type { GameType, SessionStatus } from "@/types/database";
 
-export type GameSessionPayload = {
+export type GameSession = {
   id: string;
   couple_id: string;
   game_type: GameType;
@@ -9,21 +11,14 @@ export type GameSessionPayload = {
   player_ids: string[];
 };
 
-export function asGameSessionPayload(data: unknown): GameSessionPayload | null {
-  let value = data;
-  if (typeof data === "string") {
-    try {
-      value = JSON.parse(data) as unknown;
-    } catch {
-      return null;
-    }
-  }
+export type GameSessionPayload = GameSession;
 
-  if (!value || typeof value !== "object") {
+export function asGameSessionPayload(data: unknown): GameSessionPayload | null {
+  const row = asRecord(data);
+  if (!row) {
     return null;
   }
 
-  const row = value as Record<string, unknown>;
   const playerIds = Array.isArray(row.player_ids)
     ? row.player_ids.filter((id): id is string => typeof id === "string")
     : [];
@@ -48,15 +43,9 @@ export function asGameSessionPayload(data: unknown): GameSessionPayload | null {
 }
 
 export function gameSessionPath(gameType: GameType, sessionId: string) {
-  if (gameType === "this_or_that") {
-    return `/games/this-or-that?session=${sessionId}`;
-  }
-  return `/games/know-me?session=${sessionId}`;
+  return quizSessionPath(quizFor(gameType), sessionId);
 }
 
 export function gameTitle(gameType: GameType) {
-  if (gameType === "this_or_that") {
-    return "This or That";
-  }
-  return "How Well Do You Know Me?";
+  return quizFor(gameType).title;
 }

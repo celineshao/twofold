@@ -5,6 +5,7 @@ import { TonightCard } from "@/components/home/TonightCard";
 import { requireUser } from "@/lib/auth/session";
 import { getCoupleMembership } from "@/lib/couple/membership";
 import { getOpenGameInvite } from "@/lib/games/queries";
+import { QUIZ_GAMES } from "@/lib/games/quizzes";
 
 export default async function HomePage() {
   const user = await requireUser();
@@ -103,18 +104,19 @@ export default async function HomePage() {
           <h2 className="mt-1 font-display text-2xl font-semibold">Tonight Together</h2>
         </div>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          <TonightCard
-            title="This or That"
-            description="Same prompt, two choices. Match and you both earn extra Hearts."
-            accent="bg-sage/60 text-sage-deep"
-            href="/games/this-or-that"
-          />
-          <TonightCard
-            title="How Well Do You Know Me?"
-            description="One of you answers as yourself. The other guesses. Reveal together."
-            accent="bg-peach/50 text-[#9a6a48]"
-            href="/games/know-me"
-          />
+          {QUIZ_GAMES.map((quiz, index) => (
+            <TonightCard
+              key={quiz.gameType}
+              title={quiz.title}
+              description={quiz.cardDescription}
+              accent={
+                index === 0
+                  ? "bg-sage/60 text-sage-deep"
+                  : "bg-peach/50 text-[#9a6a48]"
+              }
+              href={quiz.href}
+            />
+          ))}
           <TonightCard
             title="Draw Together"
             description="A shared sketchpad for doodles, maps, and little love notes."
